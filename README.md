@@ -8,7 +8,7 @@ AI 실험실 채널의 Claude Code 스킬 저장소 (플러그인 마켓플레�
 ### A. GitHub 플러그인으로 (추천, 업데이트가 쉬움)
 이 폴더를 GitHub 저장소(비공개 가능)로 올린 뒤, 다른 PC의 Claude Code에서:
 ```
-/plugin marketplace add <github-아이디>/ai-lab-skills
+/plugin marketplace add Ktaewon/ai-lab-skills
 /plugin install ai-lab-video@ai-lab-skills
 ```
 업데이트가 나오면 `/plugin marketplace update ai-lab-skills` 후 플러그인 업데이트(또는 재설치).
