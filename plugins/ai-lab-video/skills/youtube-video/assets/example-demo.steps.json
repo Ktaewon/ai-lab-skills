@@ -1,0 +1,12 @@
+{
+  "url": "file://SKILL_DIR/assets/sample-app.html",
+  "viewport": { "width": 1920, "height": 1080 },
+  "settleMs": 800,
+  "actions": [
+    { "click": "#task", "label": "입력창 클릭" },
+    { "type": "영상 기획하기", "delay": 70 },
+    { "click": "#add", "label": "추가" },
+    { "click": "li:nth-child(1) .check", "label": "체크" }
+  ],
+  "tailMs": 1200
+}

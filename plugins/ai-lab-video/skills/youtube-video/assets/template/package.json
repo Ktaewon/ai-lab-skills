@@ -1,0 +1,25 @@
+{
+  "name": "youtube-episode",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@react-three/fiber": "8.18.0",
+    "@remotion/cli": "4.0.539",
+    "@remotion/three": "4.0.539",
+    "@remotion/transitions": "4.0.539",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.539",
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/three": "0.170.0",
+    "playwright": "^1.40.0",
+    "typescript": "^5.0.0"
+  }
+}

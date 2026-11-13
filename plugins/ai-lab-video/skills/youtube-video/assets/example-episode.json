@@ -1,0 +1,216 @@
+{
+  "title": "AI 실험실 Ep.0 - 할 일 앱을 AI가 직접 써보면?",
+  "channel": "AI 실험실",
+  "episode": "Ep.0",
+  "description": "AI 에이전트가 할 일 앱을 직접 써보고, 녹화부터 편집까지 영상 하나를 혼자 만들어 봤습니다.",
+  "tags": [
+    "AI",
+    "Claude",
+    "영상자동화",
+    "AI실험실"
+  ],
+  "voice": {
+    "provider": "gemini",
+    "voice": "Kore",
+    "style": "밝고 또렷한 한국어 유튜버 톤으로 자연스럽게 읽어줘"
+  },
+  "music": "audio/music.mp3",
+  "musicVolume": 0.08,
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "title",
+      "chapter": "인트로",
+      "narration": "오늘은 AI가 직접 앱을 써보고, 영상까지 혼자 만들어 봅니다.",
+      "label": "AI 실험실 · EP.0",
+      "title": [
+        "AI가 직접 써본",
+        "할 일 앱"
+      ],
+      "subtitle": "녹화부터 편집까지 사람 손 없이",
+      "mascot": {
+        "beats": [
+          {
+            "at": 0.6,
+            "pose": "wave",
+            "say": "해보자!"
+          },
+          {
+            "at": 2.6,
+            "pose": "excited"
+          }
+        ]
+      }
+    },
+    {
+      "id": "plan",
+      "type": "statement",
+      "narration": "실험 방법은 간단합니다. 할 일을 두 개 추가하고, 하나를 완료 처리한 뒤, 걸린 시간을 재 볼게요.",
+      "kicker": "실험 방법",
+      "heading": [
+        "세 가지만",
+        "해볼게요"
+      ],
+      "bullets": [
+        "할 일 두 개 추가",
+        "하나는 완료 체크",
+        "걸린 시간 측정"
+      ],
+      "doodles": [
+        {
+          "type": "note",
+          "at": 1.2,
+          "x": 66,
+          "y": 16,
+          "w": 18,
+          "h": 16,
+          "text": "맥북 M3\n16GB로 돌림",
+          "rotate": 4
+        }
+      ],
+      "mascot": {
+        "beats": [
+          {
+            "at": 3.0,
+            "pose": "explain",
+            "say": "자, 보세요"
+          }
+        ]
+      }
+    },
+    {
+      "id": "demo",
+      "type": "recording",
+      "chapter": "직접 써보기",
+      "narration": "먼저 입력창을 누르고 할 일을 적은 다음 추가 버튼을 누릅니다. 마지막으로 체크 박스를 눌러 완료 처리하면 끝이에요.",
+      "steps": "record/demo.steps.json",
+      "zoom": 1.6,
+      "zoomShort": 1.15,
+      "shots": [
+        "할 일 추가",
+        "완료 체크"
+      ]
+    },
+    {
+      "id": "log",
+      "type": "terminal",
+      "chapter": "결과",
+      "narration": "녹화 기록을 열어 보면 클릭이 몇 번, 언제 일어났는지 그대로 남아 있습니다.",
+      "title": "record/demo.clicks.json",
+      "command": "cat record/demo.clicks.json | jq '.clicks[].label'",
+      "lines": [
+        "\"입력창 클릭\"",
+        "\"추가\"",
+        "\"체크\""
+      ],
+      "highlight": [
+        2
+      ],
+      "doodles": [
+        {
+          "type": "underline",
+          "at": 3.4,
+          "x": 9,
+          "y": 46,
+          "w": 22,
+          "h": 5,
+          "text": "기록 그대로"
+        }
+      ],
+      "mascot": {
+        "beats": [
+          {
+            "at": 2.2,
+            "pose": "surprised",
+            "say": "오?"
+          }
+        ],
+        "side": "right",
+        "size": 330
+      }
+    },
+    {
+      "id": "chart",
+      "type": "chart",
+      "narration": "사람이 직접 녹화하고 편집하면 십오 분쯤 걸리는 작업이, 에이전트로는 일 분이 채 안 걸렸어요.",
+      "heading": "영상 하나 만드는 데 걸린 시간",
+      "unit": "분",
+      "bars": [
+        {
+          "label": "직접 녹화·편집",
+          "value": 15
+        },
+        {
+          "label": "AI 에이전트",
+          "value": 0.8,
+          "highlight": true
+        }
+      ],
+      "source": "예시 값입니다. 실제 영상에서는 직접 잰 값을 넣으세요.",
+      "mascot": {
+        "beats": [
+          {
+            "at": 1.6,
+            "pose": "surprised",
+            "say": "헐"
+          },
+          {
+            "at": 4.2,
+            "pose": "cheer",
+            "say": "두 배!!"
+          }
+        ]
+      },
+      "doodles": [
+        {
+          "type": "circle",
+          "at": 4.0,
+          "x": 24,
+          "y": 48,
+          "w": 13,
+          "h": 13
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "chapter": "마무리",
+      "narration": "다음 편에서는 로컬 모델과 클라우드 모델의 속도를 비교해 볼게요. 구독하고 기다려 주세요!",
+      "heading": "다음 편: 로컬 vs 클라우드 LLM",
+      "sub": "AI 실험실은 매주 새 실험을 올립니다",
+      "mascot": {
+        "beats": [
+          {
+            "at": 0.5,
+            "pose": "shy"
+          },
+          {
+            "at": 3.0,
+            "pose": "wave",
+            "say": "또 봐요~"
+          }
+        ],
+        "side": "right"
+      }
+    }
+  ],
+  "shorts": [
+    {
+      "id": "speed",
+      "hook": "영상 편집, AI한테 맡기면 몇 분?",
+      "scenes": [
+        "demo",
+        "chart"
+      ]
+    }
+  ],
+  "thumbnail": {
+    "lines": [
+      "15분→1분",
+      "AI가 혼자 편집"
+    ],
+    "sub": "AI 실험실 EP.0",
+    "pose": "surprised"
+  }
+}

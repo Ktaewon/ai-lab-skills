@@ -1,0 +1,13 @@
+{
+  "fps": 30,
+  "title": "",
+  "channel": "",
+  "episode": "",
+  "accent": null,
+  "music": null,
+  "musicVolume": 0.08,
+  "totalFrames": 1,
+  "scenes": [],
+  "shorts": [],
+  "thumbnail": { "lines": ["run prepare.py"], "sub": "" }
+}

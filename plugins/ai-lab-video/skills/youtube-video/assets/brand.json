@@ -1,0 +1,101 @@
+{
+  "name": "AI 실험실",
+  "concept": "Premium stage + scrappy doodles + felt otter mascot. Data and titles move smoothly (springs); doodles jitter in stop-motion (8-12 fps) on top; the otter reacts at key moments.",
+  "colors": {
+    "stage": "#1B1C21",
+    "panel": "#111215",
+    "panelBorder": "#2A2C33",
+    "text": "#F2F0EB",
+    "muted": "#8A8D96",
+    "accent": "#FF6A3D",
+    "barMuted": "#3A3C44",
+    "captionHighlight": "#FFE14D",
+    "doodle": "#FF3B3B",
+    "postit": "#FFE95C",
+    "mint": "#7CF2D0",
+    "lightStage": "#F3F0EA"
+  },
+  "fonts": {
+    "display": {
+      "family": "Black Han Sans",
+      "files": [
+        "BlackHanSans-Regular.ttf"
+      ]
+    },
+    "body": {
+      "family": "Pretendard",
+      "files": [
+        "Pretendard-Regular.otf:400",
+        "Pretendard-Medium.otf:500",
+        "Pretendard-SemiBold.otf:600",
+        "Pretendard-Bold.otf:700",
+        "Pretendard-ExtraBold.otf:800",
+        "Pretendard-Black.otf:900"
+      ]
+    },
+    "code": {
+      "family": "D2Coding",
+      "files": [
+        "D2Coding-Regular.ttf:400",
+        "D2Coding-Bold.ttf:700"
+      ]
+    },
+    "hand": {
+      "family": "Nanum Pen Script",
+      "files": [
+        "NanumPenScript-Regular.ttf"
+      ]
+    }
+  },
+  "stage": {
+    "glow": true,
+    "grain": 0.06
+  },
+  "captions": {
+    "long": "bottom bar, Pretendard SemiBold 42px, dark translucent box",
+    "short": "karaoke bold: Black Han Sans 84px, white with 14px black outline, spoken word turns captionHighlight"
+  },
+  "thumbnail": "big-number: huge accent number + 2-4 words + otter pose + one crude red circle",
+  "mascot": {
+    "main": "otter",
+    "poses": {
+      "idle": "default, listening while the narration explains",
+      "wave": "hello / goodbye: intro and outro",
+      "cheer": "both arms up: success, the big number lands",
+      "shy": "blushing, hands on cheeks: cute or slightly embarrassing result",
+      "surprised": "notice marks: unexpected result, 'wait what'",
+      "calm": "eyes closed: zen, waiting, slow process running",
+      "thinking": "paw on chin: hypothesis, comparing options",
+      "excited": "kick + marks: celebration, next-episode teaser",
+      "jump": "leaping with joy: the experiment worked, best result of the episode",
+      "blush": "rosy cheeks, eyes closed smiling: flattered, adorable result, thank-you to viewers",
+      "gasp": "paws on cheeks + marks: shocking number, 'no way'",
+      "confused": "question mark: weird output, 'why?', setting up a question for the viewer",
+      "worried": "teary eyes, paw at mouth: risk, cost warning, it might fail",
+      "angry": "frown + anger mark: bug, rate limit, bad answer, frustrating tool",
+      "peek": "leaning in sideways: sneak peek, 'look at this', curiosity before a reveal",
+      "sleepy": "sitting, zzz: boring part, long wait, slow model",
+      "nap": "curled up asleep: very long job (overnight render, training), time skip",
+      "explain": "pointer stick: teaching a concept, walking through a diagram or steps",
+      "idea": "light bulb: key insight, tip, 'here's the trick'",
+      "search": "magnifying glass: investigating, zoom on detail, research, debugging",
+      "note": "notepad + pencil: summary, checklist, key takeaways, memo",
+      "reading": "open book: docs, papers, reading the manual or a release note",
+      "laptop": "laptop with play icon: demo, watching the screen, subscribe/watch next",
+      "coffee": "warm cup, content smile: break, relaxed recap, 'while it runs...'",
+      "explorer": "safari hat + vest: new tool exploration, 'let's explore', field test",
+      "graduate": "cap and gown: tutorial complete, mastered it, series finale, level up",
+      "pajamas": "nightcap + PJs: late-night build, overnight experiment, good-night outro",
+      "cozy": "knit cardigan: calm talk, retrospective, seasonal/cozy episode"
+    },
+    "friends": [
+      "cat",
+      "puppy",
+      "hamster",
+      "bunny",
+      "mole",
+      "hedgehog"
+    ],
+    "source": "cut from the user's reference images (assets/mascot/source: otter-sheet.webp for set 1, otter-set2/ for set 2)"
+  }
+}

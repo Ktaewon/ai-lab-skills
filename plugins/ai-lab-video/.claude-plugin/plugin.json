@@ -1,0 +1,6 @@
+{
+  "name": "ai-lab-video",
+  "version": "1.1.0",
+  "description": "AI 실험실 YouTube 제작 스킬 (youtube-video): 롱폼, 쇼츠 모션 비트, 썸네일, 내레이션, 렌더",
+  "author": { "name": "AI 실험실" }
+}
