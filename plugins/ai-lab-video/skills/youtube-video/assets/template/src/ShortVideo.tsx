@@ -125,7 +125,28 @@ const Hook: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-export const ShortVideo: React.FC<{ shortId: string }> = ({ shortId }) => {
+// "fixed" hook (episode.json "hookStyle": "fixed"): a big, plain title that stays at the top for
+// the whole short, like most Korean countdown shorts. Lines split on "\n"; the last line is yellow.
+const FixedHeader: React.FC<{ text: string }> = ({ text }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const lines = text.split('\n');
+  return (
+    <div style={{ position: 'absolute', left: 30, right: 30, top: 190, textAlign: 'center' }}>
+      {lines.map((l, i) => {
+        const p = spring({ frame: frame - i * 4, fps, config: { damping: 12, mass: 0.7 } });
+        const size = Math.min(122, (1000 / Math.max(1, textW(l, 1))));
+        return (
+          <div key={i} style={{ fontFamily: theme.display, fontSize: size, lineHeight: 1.13, color: i === lines.length - 1 ? '#FFE45C' : '#fff', whiteSpace: 'nowrap',
+            WebkitTextStroke: '8px #000', paintOrder: 'stroke fill', transform: `scale(${0.7 + 0.3 * p})`, opacity: Math.min(1, p * 1.5) }}>{l}</div>
+        );
+      })}
+    </div>
+  );
+};
+
+// clean: hide captions and the progress bar, for a cover still taken from the short itself
+export const ShortVideo: React.FC<{ shortId: string; clean?: boolean }> = ({ shortId, clean }) => {
   const short = timeline.shorts.find((s) => s.id === shortId);
   const scenes = scenesOf(shortId);
   let from = 0;
@@ -137,7 +158,7 @@ export const ShortVideo: React.FC<{ shortId: string }> = ({ shortId }) => {
         return (
           <Sequence key={s.id} from={at} durationInFrames={s.frames}>
             <SceneView scene={s} />
-            <Captions captions={s.captions.short} format="short" />
+            {!clean && <Captions captions={s.captions.short} format="short" plain={(timeline as { captionStyle?: string }).captionStyle === 'plain'} />}
             {s.audio && (
               <Sequence from={LEAD_IN}>
                 <Audio src={staticFile(s.audio)} />
@@ -146,8 +167,8 @@ export const ShortVideo: React.FC<{ shortId: string }> = ({ shortId }) => {
           </Sequence>
         );
       })}
-      {short?.hook && <Hook text={short.hook} />}
-      <Progress total={from} />
+      {short?.hook && ((timeline as { hookStyle?: string }).hookStyle === 'fixed' ? <FixedHeader text={short.hook} /> : <Hook text={short.hook} />)}
+      {!clean && <Progress total={from} />}
       {timeline.music && <Audio src={staticFile(timeline.music)} volume={timeline.musicVolume} loop />}
     </AbsoluteFill>
   );

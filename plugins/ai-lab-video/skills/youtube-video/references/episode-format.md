@@ -14,6 +14,9 @@
   //   a scene with "voice": "toast" is read by that role (second speaker, letter, toast)
   "music": "audio/music.mp3",     // optional, in public/; skipped if the file is missing
   "musicVolume": 0.08,            // keep 0.05–0.12 under narration
+  "pronounce": { "TOP9": "탑 나인" },  // optional: the voice reads the right side, captions keep the written word (ElevenLabs)
+  "captionStyle": "plain",        // optional: "karaoke" (default, spoken word yellow) | "plain" (white, dark stroke)
+  "hookStyle": "fixed",           // optional: "slide" (default, big 2 s then header) | "fixed" (big title stays on top all short)
   "scenes": [ /* in order, see below */ ],
   "shortScenes": [ /* vertical-only scenes for Shorts (usually "beats"), see "Shorts" below */ ],
   "shorts": [
@@ -160,7 +163,10 @@ conversation: asking an AI to do something, back-and-forth debugging, a prompt a
 - `hook`: on screen from frame 0 (frame 0 is the cover in feeds), big for 2 s, then a header. A question or a surprising claim.
   Too long for one big line, it splits at a comma (dropped), else into even halves; force a break with `\n`.
   When it shrinks, each line glides into a one-line header if that fits (comma restored), else stays stacked.
+  With `"hookStyle": "fixed"` the hook is instead a big plain title (Black Han Sans, last line yellow)
+  that stays at the top for the whole short, like Korean countdown shorts; use it with `win` beats.
 - Karaoke captions in the lower third and a progress bar at the top are automatic
+  (`"captionStyle": "plain"` for ordinary white subtitles — the user asked for these on the TOP9 short)
 - 15–60 s is the sweet spot; up to 180 s is allowed (prepare.py notes > 60 s)
 - `thumb`: vertical cover rendered as the still `ShortThumb-<id>` (1080x1920):
   `label` (top pill), `big` (huge word/number in a red marker circle), `lines` (2, last in yellow),
@@ -221,6 +227,53 @@ Which beat for which line is in `references/shorts-motion.md`; the fields:
 - `sfx` on any beat: `[{ "at": 0.2, "name": "type", "vol": 0.3 }]` (names = files in `public/sfx/`). Cuts, notes,
   icons, character pops, approve taps and connect icons get SFX automatically; add only extra ones.
 - strokes draw smooth (no wobble) and fully, with pathLength=1; keep them inside y 300–1240
+
+#### Countdown beats (`win` — ranking shorts, EP.05 "가장 똑똑한 AI 순위 TOP9")
+
+One rank at a time in a fixed layout: the `fixed` hook title on top, a full-width 16:9 window
+(y 410–1018), a 9→1 ladder (y≈1046), stat cards (y 1124–1280), plain captions below. Use with
+`"hookStyle": "fixed"` and `"captionStyle": "plain"`. How to write one: `references/shorts-motion.md` § 7.
+```jsonc
+{ "kind": "win", "ladder": true, "icons": [ { "src": "icons/claude.jpg", "label": "클로드", "say": "클로드" } ] },  // intro: icons in the window
+{ "say": "기준은", "kind": "win", "src": "images/aa_site.png", "pos": "50% 0%", "ladder": false,   // image or .mp4 in the window
+  "facts": [ { "label": "합친 시험", "value": 9, "unit": "개", "tone": "gold", "say": "9개" } ], "credit": "artificialanalysis.ai" },
+{ "say": "8위", "kind": "win", "r": 8, "name": "GPT-6.1 Terra", "maker": "OpenAI", "logo": ["icons/chatgpt.jpg"], "score": 51,
+  "src": "clips/terra.mp4", "start": 6, "rate": 1, "ladder": true,                              // the model's official video, from 6 s
+  "facts": [ { "label": "과제당 비용", "prefix": "$", "value": 0.96, "decimals": 2, "tone": "good", "say": "1달러도" },
+             { "label": "TOP9 중", "text": "최저가", "tone": "good", "say": "제일" } ],
+  "credit": "OpenAI 공식 영상 · Artificial Analysis" },
+{ "say": "대망의", "kind": "win", "r": 1, "mystery": true, "ladder": true },                       // "?" teaser before #1
+{ "say": "아레나에선", "kind": "win", "ladder": false,                                             // mini board in the window
+  "rows": [ { "r": 1, "icon": "icons/gemini.jpg", "name": "Gemini 4 Carbon", "score": 1526, "say": "카본" } ] },
+{ "say": "딥시크와", "kind": "win", "ladder": false, "icons": [ … ], "stamp": "TOP9 밖", "stampSay": "없고요" },
+{ "say": "여러분이라면", "kind": "win", "ladder": false,                                           // closing question: option cards
+  "options": [ { "icon": "icons/claude.jpg", "tag": "비싼 1위", "name": "Fable 5.2", "color": "#FF6B6B", "say": "페이블" } ] }
+```
+- `r` puts the rank badge on the window (red; yellow for 1) and lights that ladder step; `name`/`maker`/`logo`/`score`
+  make the lower third (score pill counts up). `ladder: true` shows the 9→1 row; `past` (ranks already revealed,
+  with their logo) is filled in by prepare.py from the earlier beats — set it only to override.
+- window content, first that applies: `mystery` → `icons` → `rows` → `options` → `src` (video/image; `start` s, `rate`, `pos`)
+- `facts` (1–2 cards; one card goes full width): `value` counts up (`prefix`, `unit`, `decimals`) or `text` (shrinks when long);
+  `ring: 0.6` adds a timer ring filled to 60 %; `bars: [{label, value, hi}]` compares prices (uses `prefix`/`unit`);
+  `tone` good (green) / bad (red) / gold (yellow).
+- Item timing: `say` on facts/icons/rows/options (searched after the beat's own word) or `at` seconds into the beat;
+  `stampSay`/`stampAt` for the stamp. Rank stamp, fact/icon/option pops and the cut whoosh are automatic.
+- `tall: true` stretches the window over the ladder/fact area (vertical videos, full-height clips; `fit: "contain"`
+  shows a vertical video whole). `posts: [{src, at|say, scroll, scrollFor, w, rot}]` shows captured posts as cards
+  (crop to the text, blur avatars/handles). `headline` (+ `headlineAt`) slams a big word over the bottom of the beat.
+- **`mode` — vary the layout.** The user found "video + two cards" on every beat boring (EP.06). Mix these
+  (all fill y 410–1280; items take `say` or `at`; a `stamp` works on any of them):
+  - `blueprint`: the clip turns into a blue technical drawing as a scan line sweeps (`src`, `wipeAt`, `labels`)
+  - `cards`: 2–3 big cards with a file glyph and ✕/✓ (`items` [{glyph, title, sub, tone, mark: "x"|"check"}])
+  - `hex`: disassembler rows read line by line (`label`, `every`, `file`)
+  - `flow`: 2–4 nodes top→bottom with a moving packet (`nodes` [{label, sub, icon, tone}])
+  - `big`: one huge count-up with stars (`value`, `decimals`, `prefix`, `unit`, `label`, `sub`, `valueAt`)
+  - `vs`: "원조 → 새것" rows, the original struck through (`rows` [{from, to, icon}])
+  - `grid`: icons popping in a grid with a running count (`grid` [src], `cols`, `every`, `plus`, `count`)
+  - `quote`: paper card, one line highlighted (`title`, `lines`, `hl`, `hlAt`, `source`, `paper: false` for dark)
+- The ladder has `total` steps (prepare.py sets it to the highest `r`, so TOP5/TOP10 work as is).
+- Older ranking kinds, kept for reference: `rank` (ivory leaderboard that fills row by row) and `card`
+  (one rank per ivory page with post-it reasons). The user found both weaker than `win` ("포스트잇 장면은 너무 별로").
 
 ## Thumbnail
 

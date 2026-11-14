@@ -7,7 +7,7 @@
       "name": "ai-lab-video",
       "source": "./plugins/ai-lab-video",
       "description": "youtube-video 스킬: 롱폼 + 쇼츠 + 썸네일 + 업로드 문구. 쇼츠 모션 비트(데모 폰, 캐릭터 말풍선, 앱 아이콘, 결제 승인, 계정 연결, 아이보리 노트) 포함",
-      "version": "1.1.0"
+      "version": "1.2.0"
     }
   ]
 }

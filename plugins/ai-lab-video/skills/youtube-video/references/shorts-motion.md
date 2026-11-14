@@ -94,3 +94,81 @@ with `start` / `rate` rather than re-encoding.
 - [ ] strokes smooth and complete; nothing cut off at the frame edge
 - [ ] credits on screen for captured material; sources in `out/shorts-upload.md`
 - [ ] SFX audible but under the voice; −14 LUFS; freeze/black detect clean
+
+## 7. Ranking / countdown shorts (`win` beats — EP.05 "가장 똑똑한 AI 순위 TOP9")
+
+The user's reference was a Korean countdown short: a big plain title fixed on top, one media window
+in the middle, plain white subtitles, each rank revealed one by one with ~12 s of explanation.
+Fields: `references/episode-format.md` → "Countdown beats".
+
+What the user asked for, in order (each was a correction, so do them from the start):
+- **Plain subtitles**, not karaoke → `"captionStyle": "plain"`.
+- **One rank at a time** like the reference, not a board that fills up → one `win` beat per rank.
+- **A video and an explanation for every rank**: the entry's own official video (the maker's
+  YouTube channel: launch video, demo, keynote segment) or something made with it, and a narration
+  line saying what we are looking at ("구글은 이 모델로 휴머노이드 로봇에게 콩주머니 던지기를 가르쳤어요",
+  "지금 보시는 수중 도시도 카본이 3D 코드로 직접 만든 거예요").
+- **Motion graphics, not post-its**: count-up stat cards, a timer ring for time, price bars for a
+  value comparison. The ivory post-it rank cards were "너무 별로".
+- **Big honest title** like other Korean shorts → `"hookStyle": "fixed"`, two lines, last in yellow
+  ("가장 똑똑한 AI\n순위 TOP9").
+- **"TOP9" read as "탑 나인"**, not "탑 구" → `"pronounce"`.
+
+Structure that worked (121 s for 9 ranks; over 60 s is fine for this format):
+1. intro: the contenders' icons in the window ("AI 순위 TOP9, 시험 점수로 줄 세워 봤습니다")
+2. the criterion with the source page in the window and 1–2 facts (what is measured, how many tests)
+3. ranks N→2: badge + official video + name/maker/score lower third + 1–2 facts, ~10–13 s each
+4. `mystery` "?" beat ("대망의 1위는…"), then rank 1 (yellow badge)
+5. the twist that starts the comments: a different leaderboard (`rows`), a value pick (`bars`),
+   notable entries that missed the list (`icons` + `stamp`)
+6. closing question with `options` cards (2–3 choices) → pinned comment repeats the question
+
+Rules:
+- **Real, dated data only.** Name the source and date on screen (`credit`) and in the upload text;
+  ties and dedupe rules (one entry per model family) go in the description.
+- **Clips**: download with yt-dlp `--download-sections "*START-END" --force-keyframes-at-cuts`
+  (otherwise the section can come back without a moov atom); look at frames before picking `start`
+  (a launch video often opens on a blank title card — Fable's clip moved from 6 s to 17 s). Keep
+  them muted; the narration carries the sound. Credit "<회사> 공식 영상".
+- Pages behind a captcha are not bypassed: use the maker's keynote or another official video.
+- Facts: short labels (≤ 12 chars), one number or a 2–4 word text; the cheapest/fastest/most
+  expensive fact is what people argue about. Time per task → `ring`; "same score, 1/8 the price" → `bars`.
+- Ladder icons are the maker's app icon (`app_icons.cjs`), so viewers see which company keeps winning.
+- Upload text: list every clip's channel and title under "영상 출처".
+- **Vary the layout every beat** (EP.06 feedback "영상 + 박스 두 개가 너무 많아 지루"): at most one or two
+  classic window+facts beats per short; the rest use `mode` (blueprint, cards, hex, flow, big, vs, grid, quote),
+  `tall` clips with a `headline`, and `posts`. Never the same layout twice in a row.
+- Explainer shorts ("~가 뭔가요?") use the same fixed title + plain captions, without ranks or ladder. Reviews from
+  X/Threads: capture the public embed (platform.twitter.com/embed/Tweet.html?id=…, threads.com/@user/post/…/embed)
+  with Playwright at 400 px width, crop to the text, blur avatar and handle, credit the platform only.
+
+### Top margin and cover (EP.06, 2026-11-14)
+Phone feeds crop the top of a Short's cover; with the title at y 105 the first line was cut in half.
+The template now puts the fixed title at y 190, the window/mode area at y 490–1320 (`WIN_TOP`,
+`AREA_TOP`/`AREA_H`), facts and ladder below the window, and plain captions at y 1330. Keep new
+layouts inside that area rather than moving them back up. For the Short's thumbnail, render a clean
+still of the short itself (`clean: true` prop hides captions and the progress bar) on its most
+striking beat — fixed title on top, beat below — instead of a separate otter thumbnail.
+
+## 8. Tower beats — "star elevator" ranking (EP.07 "AI가 짠 무료 프로그램 TOP5", 2026-11-15)
+
+Use for a TOP-N whose entries have a number that spans orders of magnitude (GitHub stars, users,
+downloads). Do NOT reuse the `win`/`desk` window layout for every countdown — the user called a
+repeat "너무 식상해" and rejected emoji vote buttons as an ending ("마지막 장면이 너무 별로").
+
+- `kind: "tower"`, `floors: [{r, stars, color, ink?, src, start?, pos?, icon, name, what, quote, who}]`
+  shared by every beat (put them in a constant). Each floor is a full-bleed colour band at
+  log10(stars) height (`SCALE` 1900 px/decade keeps floors ≥ 0.5 decade apart from overlapping).
+- Camera: `camFrom` → `camTo` (star values) springs between floors; the yellow HUD counts stars.
+- Modes: floor (default; `tease: true` = blurred winner + "???" HUD for the hook, `starAt`),
+  `drop` (plunge to the ground, `checks` slam in — criteria), `fog` (unrevealed winner "?"),
+  `gap` (`bars` [first, last] linear bars, `stamp`/`stampSay`, red circle on the sliver `markSay`),
+  `ask` (full-bleed footage `src`, kinetic `lines` [{text, size, y, color, at|say}], red marker
+  arrow to the comment button `arrowAt`, `arrowText`).
+- `proofSay` sweeps the yellow highlighter over the floor's `quote` when that word is spoken.
+- **SFX:** tower beats use the cinematic `t_*` set (`assets/sfx/t_*.mp3`, copied by scaffold:
+  rise, drop, hit, slam, marker, sparkle, tension, boom, pop, scribble), generated with the toolkit
+  `tools/sfx.py` (ElevenLabs). The old cartoon set (whoosh/boing/stamp) sounded "저렴한 티" under a
+  premium look — keep cartoon SFX for the playful pickle/otter styles only.
+- Remotion `still` in parallel fails with "No available ports" on this machine: render a
+  `--scale=0.5` draft once with `--port=3417` and pull frames with ffmpeg instead.

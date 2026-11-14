@@ -39,7 +39,7 @@ const Marked: React.FC<{ text: string; highlights: Highlight[]; frame: number }>
   return <>{parts}</>;
 };
 
-export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short'; highlights?: Highlight[] }> = ({ captions, format, highlights = [] }) => {
+export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short'; highlights?: Highlight[]; plain?: boolean }> = ({ captions, format, highlights = [], plain }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cap = captions.find((c) => frame >= c.from && frame < c.to);
@@ -61,6 +61,16 @@ export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short';
     );
   }
 
+  if (plain) {
+    // "plain" Shorts captions (episode.json "captionStyle": "plain"): an ordinary subtitle, white
+    // Pretendard with a dark outline, no per-word colour, no pop. Up to two lines, centred.
+    return (
+      <div style={{ position: 'absolute', left: 70, right: 70, top: 1330, textAlign: 'center' }}>
+        <span style={{ fontFamily: theme.font, fontWeight: 800, fontSize: 64, lineHeight: 1.32, color: '#fff', WebkitTextStroke: '10px rgba(0,0,0,0.92)', paintOrder: 'stroke fill',
+          textShadow: '0 4px 14px rgba(0,0,0,0.55)', wordBreak: 'keep-all', whiteSpace: 'pre-line' }}>{cap.text}</span>
+      </div>
+    );
+  }
   const words = cap.text.split(' ');
   const weights = words.map((w) => w.replace(/[^\p{L}\p{N}]/gu, '').length || 1);
   const total = weights.reduce((a, b) => a + b, 0);

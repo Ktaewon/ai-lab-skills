@@ -1,7 +1,7 @@
 # ai-lab-skills
 
 AI 실험실 채널의 Claude Code 스킬 저장소 (플러그인 마켓플레이스 형식).
-지금 들어 있는 것: `ai-lab-video` 플러그인 → `youtube-video` 스킬 (v1.1.0, 쇼츠 모션 비트 포함. 변경 내역은 CHANGELOG.md).
+지금 들어 있는 것: `ai-lab-video` 플러그인 → `youtube-video` 스킬 (v1.2.0, 쇼츠 모션 비트·순위 쇼츠 레이아웃 포함. 변경 내역은 CHANGELOG.md).
 
 ## 다른 PC의 Claude에 설치하기
 

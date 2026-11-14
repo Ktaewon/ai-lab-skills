@@ -1,5 +1,8 @@
 import { AbsoluteFill, Audio, Easing, Img, Loop, OffthreadVideo, Sequence, interpolate, random, spring, staticFile, useVideoConfig } from 'remotion';
 import { theme } from '../theme';
+import { winHits } from './WinBeat';
+import { deskHits } from './DeskBeat';
+import { towerHits } from './TowerBeat';
 
 // Motion beats for the hybrid short: real Pickle demo footage in a phone, Pickle's own characters
 // (transparent idle loops from pickle.com) with speech bubbles, app icons slamming in, a payment
@@ -188,8 +191,16 @@ export const ConnectBeat: React.FC<{ b: B; f: number }> = ({ b, f }) => {
 // ---------- Sound effects: explicit `sfx` list + automatic hits per beat kind ----------
 type Hit = { at: number; name: string; vol?: number };
 export const beatHits = (b: B, fps: number): { f: number; name: string; vol: number }[] => {
+  if (b.kind === 'win' || b.kind === 'desk' || b.kind === 'tower') {
+    const w: Hit[] = [...(b.sfx ?? []), ...(b.kind === 'tower' ? towerHits(b) : b.kind === 'desk' ? deskHits(b) : winHits(b))];
+    if (b.from > 0 && b.kind !== 'tower') w.push({ at: 0, name: 'whoosh', vol: 0.3 });
+    return w.map((h) => ({ f: b.from + Math.round(h.at * fps), name: h.name, vol: h.vol ?? 0.35 }));
+  }
   const hits: Hit[] = [...(b.sfx ?? [])];
-  if (b.cut !== false && b.from > 0) hits.push({ at: 0, name: b.kind === 'memo' || b.kind === 'icons' || b.kind === 'approve' ? 'send' : 'whoosh', vol: 0.3 });
+  const cont = b.kind === 'rank' && b.prevKind === 'rank';
+  if (b.kind === 'card' && !b.mystery) hits.push({ at: 0.02, name: 'stamp', vol: 0.35 });
+  if (b.kind === 'rank') (b.rows ?? []).forEach((r: { at?: number }) => r.at !== undefined && r.at >= 0 && hits.push({ at: r.at, name: 'stamp', vol: 0.3 }));
+  if (b.cut !== false && b.from > 0 && !cont) hits.push({ at: 0, name: ['memo', 'icons', 'approve', 'card'].includes(b.kind) ? 'send' : 'whoosh', vol: 0.3 });
   (b.notes ?? []).forEach((n: { at?: number }) => n.at && hits.push({ at: n.at, name: 'pop', vol: 0.32 }));
   // Pickle character entrance: char_pop.mp3 (cute cartoon pop the user picked in EP.04), on the frame the character pops in
   (b.blobs ?? []).forEach((s: BlobSpec) => hits.push({ at: Math.max(0, s.at ?? 0), name: 'char_pop', vol: 0.24 }));
@@ -202,6 +213,6 @@ export const beatHits = (b: B, fps: number): { f: number; name: string; vol: num
 
 export const BeatSfx: React.FC<{ beats: B[] }> = ({ beats }) => {
   const { fps } = useVideoConfig();
-  const all = beats.flatMap((b) => beatHits(b, fps));
-  return <>{all.map((h, i) => <Sequence key={i} from={h.f} durationInFrames={Math.round(1.6 * fps)} layout="none"><Audio src={staticFile(`sfx/${h.name}.mp3`)} volume={h.vol} /></Sequence>)}</>;
+  const all = beats.flatMap((b, i) => beatHits({ ...b, prevKind: beats[i - 1]?.kind }, fps));
+  return <>{all.map((h, i) => <Sequence key={i} from={h.f} durationInFrames={Math.round((h.name.startsWith('t_') ? 2.2 : 1.6) * fps)} layout="none"><Audio src={staticFile(`sfx/${h.name}.mp3`)} volume={h.vol} /></Sequence>)}</>;
 };

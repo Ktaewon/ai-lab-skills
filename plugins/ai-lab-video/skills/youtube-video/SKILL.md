@@ -33,8 +33,12 @@ against the Hallmark floor rules before render.
   actions like explain/idea/search/note, outfits like explorer/graduate for special episodes).
   Friends (cat, puppy, hamster, bunny, mole, hedgehog) appear as occasional guests.
 - Fonts: Black Han Sans (titles, numbers, Shorts captions), Pretendard (body, long captions),
-  D2Coding (code), Nanum Pen Script (doodles). Shorts captions: karaoke bold (spoken word yellow).
-- Thumbnail: Big Number + 2–4 words + otter pose + one red marker circle.
+  D2Coding (code), Nanum Pen Script (doodles). Shorts captions: karaoke bold (spoken word yellow), or `"captionStyle": "plain"` white subtitles.
+- Thumbnail (long-form): Big Number + 2–4 words + otter pose + one red marker circle.
+  Shorts with the fixed title (`hookStyle: "fixed"`): the cover is a clean frame of the short itself
+  — fixed title + its most striking beat (e.g. the EP.06 icon grid), no captions or progress bar:
+  `npx remotion still Short-<id> out/thumbnail-short-<id>.png --frame=<n> --props=<json with {"shortId":"<id>","clean":true}>`.
+  Pick a frame after the beat has fully built and between captions (user, 2026-11-14).
 - When another pipeline is used, run `export_brand.py` first so it uses the same look.
 - New mascot poses: generate a new sheet in the same style, then cut it with
   `scripts/cutout.py <sheet> <cols> <rows> <outdir> <prefix>` (removes the white background,
@@ -93,6 +97,13 @@ Agree on these before building (ask only what you can't infer; propose defaults)
   name, a payment-approval tap, an account-connect meter, an ivory notebook with post-its and
   smooth red strokes, SFX on every hit. Gather real assets with `scripts/site_media.cjs`,
   `scripts/app_icons.cjs`, `scripts/stock.cjs`.
+  For a **ranking / countdown short** ("순위 TOP9", "best N") use `win` beats with
+  `"hookStyle": "fixed"` and `"captionStyle": "plain"` (`references/shorts-motion.md` § 7, EP.05 TOP9):
+  a big fixed title, one rank at a time in a 16:9 window showing that entry's official video,
+  a 9→1 ladder, count-up stat cards, about 10–13 s per rank with a one-line "what you're seeing".
+  If the voice misreads a word ("TOP9" → "탑 구"), add `"pronounce": {"TOP9": "탑 나인"}`.
+  Don't repeat the same countdown layout every episode: when the ranked number spans orders of
+  magnitude (stars, users), use `tower` beats instead (§ 8, EP.07 star elevator, cinematic `t_*` SFX).
 - **Thumbnail**: two short lines (≤ 7 chars each), payoff word last.
 - **Upload text**: `description` and `tags` in episode.json feed `out/youtube.md`. When asked for
   upload copy, also write each short's title/description and a pinned comment (for a blind test:
@@ -156,7 +167,7 @@ Write `episode.json` (format: `references/episode-format.md`; complete example:
 | `code` | explaining code line by line, a one-line fix, "이 한 줄이 핵심" | `filename`, `language`, `code`, `focus`, `diff`, `keyLine` |
 | `receipt` | what tools/subscriptions cost, what was wasted | `lines` [{name, plan, price, unused}] |
 | `map` | where things are/move (chips, data centres, regulation) | `camera`, `pins`, `routes` [{path}], `spots` |
-| `beats` | Shorts only: fast cuts timed to spoken words; motion kinds `memo` `demo` `icons` `approve` `connect` | `beats` [{say, kind, …}] (see episode-format, shorts-motion) |
+| `beats` | Shorts only: fast cuts timed to spoken words; motion kinds `memo` `demo` `icons` `approve` `connect`; countdown kinds `win`, `tower` (순위 TOPn) | `beats` [{say, kind, …}] (see episode-format, shorts-motion) |
 
 **Choosing chat / timed terminal / stickers.** They are options, not defaults — propose them per
 scene during planning, only where the content fits, and mix freely with the other types:

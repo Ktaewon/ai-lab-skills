@@ -95,6 +95,11 @@ def main():
     # ElevenLabs gets the tagged narration through its own batch folder below.
     for s in todo:
         (audio / f"{s['id']}.txt").write_text(strip_tags(s["narration"]) + "\n", encoding="utf-8")
+    # "pronounce": {"TOP9": "탑 나인"}: the voice reads the right side, captions and alignment keep the
+    # written form (<id>.txt above). Applies to ElevenLabs, which gets the narration text directly.
+    for s in todo:
+        for k, v in (ep.get("pronounce") or {}).items():
+            s["narration"] = s["narration"].replace(k, v)
     tagged = [s for s in todo if TAG_RE.search(s["narration"])]
     if provider == "elevenlabs":
         # Channel default: eleven_v4 follows audio tags; v2 reads flat and ignores them.
@@ -121,7 +126,18 @@ def main():
             cmd = [*py, str(HERE / "tts_local.py"), "--scene-dir", str(audio), "--only", ids, "--preset", voice.get("preset", "lively")]
             if voice.get("speed"):
                 cmd += ["--speed", str(voice["speed"])]
-        sys.exit(subprocess.run(cmd).returncode)
+        # These engines read <id>.txt, so give them the spoken form ("pronounce") while they run,
+        # then put the written form back for captions and alignment.
+        written = {s["id"]: (audio / f"{s['id']}.txt").read_text(encoding="utf-8") for s in todo}
+        if ep.get("pronounce"):
+            for s in todo:
+                (audio / f"{s['id']}.txt").write_text(strip_tags(s["narration"]) + "\n", encoding="utf-8")
+        try:
+            code = subprocess.run(cmd).returncode
+        finally:
+            for sid, text in written.items():
+                (audio / f"{sid}.txt").write_text(text, encoding="utf-8")
+        sys.exit(code)
 
     # ElevenLabs: one fresh batch folder per role, so nothing left over from an earlier run is billed again.
     groups: dict[str | None, list] = {}

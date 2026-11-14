@@ -175,6 +175,26 @@ def word_captions(words, offset: float, max_chars: int, keywords=()):
     return caps
 
 
+def win_past(beats: list) -> list:
+    """Countdown shorts ("win" beats): a ladder beat without "past" gets the ranks revealed before
+    it (rank + first logo), so the 9→1 ladder fills itself in; "total" defaults to the highest rank."""
+    seen: dict = {}
+    ranked = ("win", "desk")  # desk beats ("dock": true) collect revealed apps the same way
+    top = max([b["r"] for b in beats if b.get("kind") in ranked and isinstance(b.get("r"), int)] or [0])
+    for b in beats:
+        if b.get("kind") not in ranked:
+            continue
+        shelf = b.get("ladder") or b.get("dock")
+        if shelf and top:
+            b.setdefault("total", top)
+        if shelf and "past" not in b:
+            b["past"] = [{"r": r, "icon": icon} for r, icon in seen.items() if r != b.get("r")]
+        icon = (b.get("logo") or [None])[0] or b.get("icon")
+        if b.get("r") and not b.get("mystery") and icon:
+            seen.setdefault(b["r"], icon)
+    return beats
+
+
 def visual_min(scene: dict, rec: dict | None) -> float:
     kind = scene["type"]
     base = MIN_SCENE.get(kind, 3.0)
@@ -212,8 +232,11 @@ def main():
     for s in ep["scenes"] + [x for x in ep.get("shortScenes", []) if x.get("tts")]:
         txt = audio_dir / f"{s['id']}.txt"            # heard words; align_words.py matches against this
         tagged_txt = audio_dir / f"{s['id']}.tts.txt"  # with audio tags = what TTS was asked to say
+        # "pronounce": {"TOP9": "탑 나인"} rewrites words for the voice only; captions keep the written form
+        text = strip_tags(s.get("narration", "").strip())
         tagged = s.get("narration", "").strip()
-        text = strip_tags(tagged)
+        for k, v in (ep.get("pronounce") or {}).items():
+            tagged = tagged.replace(k, v)
         if not text:
             continue
         old = (tagged_txt.read_text(encoding="utf-8").strip() if tagged_txt.is_file()
@@ -335,26 +358,55 @@ def main():
             body = re.sub(r"\s+", "", text)
             props["highlights"] = [{"text": kw, "from": round((LEAD_IN + speak * max(0, body.find(kw.replace(" ", ""))) / max(1, len(body))) * FPS)} for kw in s["keywords"]]
         if words and s.get("beats"):
-            bts = []
+            bts = []; last = 0
             for b in s["beats"]:
                 b = dict(b)
                 if "say" in b:
-                    pos = flat.find(norm(b.pop("say")))
+                    # search after the previous beat's word, so a repeated word ("클로드" twice) hits the right one
+                    say = b.pop("say"); pos = flat.find(norm(say), last)
                     if pos < 0:
-                        warnings.append(f"{sid}: beat trigger not found"); continue
+                        pos = flat.find(norm(say))
+                    if pos < 0:
+                        warnings.append(f"{sid}: beat trigger '{say}' not found"); continue
+                    last = pos + 1
                     b["from"] = 0 if not bts else frame_at(pos)
                 else:
                     b["from"] = 0 if not bts else round((LEAD_IN + b.pop("at", 0)) * FPS)
+                # items inside a beat (win facts/icons/rows/options, icons items) can start on a spoken
+                # phrase too: {"say": "96센트"} → "at" = seconds into the beat; "stampSay" → "stampAt".
+                ip = max(0, last - 1)
+                for key in ("facts", "icons", "items", "rows", "options", "posts", "nodes", "checks", "bars", "lines"):
+                    if not isinstance(b.get(key), list):
+                        continue
+                    b[key] = [dict(x) if isinstance(x, dict) else x for x in b[key]]
+                    for it in b[key]:
+                        if isinstance(it, dict) and "say" in it and "at" not in it:
+                            say = it.pop("say"); p = flat.find(norm(say), ip)
+                            if p < 0:
+                                warnings.append(f"{sid}: {key} trigger '{say}' not found after beat start"); continue
+                            it["at"] = round(max(0, frame_at(p) - b["from"]) / FPS, 2); ip = p + 1
+                # any "<name>Say" on the beat (stampSay, proofSay, starSay …) → "<name>At"
+                for k in [k for k in list(b) if k.endswith("Say") and isinstance(b[k], str)]:
+                    say = b.pop(k); p = flat.find(norm(say), ip)
+                    if p < 0:
+                        warnings.append(f"{sid}: {k} '{say}' not found after beat start")
+                    else:
+                        b[k[:-3] + "At"] = round(max(0, frame_at(p) - b["from"]) / FPS, 2)
                 bts.append(b)
-            props["beats"] = bts
+            props["beats"] = win_past(bts)
         if not words and s.get("beats"):
             body = re.sub(r"\s+", "", text); bts = []
             for b in s["beats"]:
                 b = dict(b); say = b.pop("say", None)
                 pos = body.find(say.replace(" ", "")) if say else 0
                 b["from"] = 0 if not bts else round((LEAD_IN + speak * max(0, pos) / max(1, len(body))) * FPS)
+                for key in ("facts", "icons", "items", "rows", "options", "posts", "nodes", "checks", "bars", "lines"):
+                    if isinstance(b.get(key), list):
+                        b[key] = [{k: v for k, v in x.items() if k != "say"} if isinstance(x, dict) else x for x in b[key]]
+                for k in [k for k in list(b) if k.endswith("Say")]:
+                    b.pop(k)
                 bts.append(b)
-            props["beats"] = bts
+            props["beats"] = win_past(bts)
             warnings.append(f"{sid}: beats timed by estimate (no word timings)")
         # Timed lists: chat messages, timed terminal lines and stickers. An item with "say" appears
         # when that phrase is spoken (searched in order, so a repeated word hits its next use),
@@ -486,6 +538,8 @@ def main():
         "accent": ep.get("accent"),
         "music": ep.get("music") if ep.get("music") and (project / "public" / ep["music"]).is_file() else None,
         "musicVolume": ep.get("musicVolume", 0.08),
+        "captionStyle": ep.get("captionStyle", "karaoke"),
+        "hookStyle": ep.get("hookStyle", "slide"),
         "totalFrames": cursor,
         "leadInFrames": round(LEAD_IN * FPS),  # LongVideo/ShortVideo start each narration here
         "scenes": scenes,
