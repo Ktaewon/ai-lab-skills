@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0 — 2026-11-18 · 런칭·뉴스 쇼츠 (EP.08 GPT-6.2)
+
+- 아이보리 모션 비트 `scenes/Motion2.tsx` 템플릿 편입: `stats` `vs` `poll` `headline` `hud` `chat` `rules` `donut`
+  `calendar` `timeline` `typer` `meter` `ticker` `range` `textcard`, 새 `duel`(모델 vs 모델 막대, 비용 블록)과
+  `stall`(긴 작업 진행 바가 중간에 멈춤). 모든 beat에 `meme`(캡처한 게시물 폴라로이드)·`fx` 오버레이
+- 쇼츠 장면 옵션 `hardCut`(펀치인·플래시·전환 whoosh 없음), `noLeadIn`(첫 프레임부터 음성)
+- 쇼츠별 `hookStyle` / `captionStyle`, `fixedBand`(어두운 띠 위 큰 고정 제목 + 장면 200px 아래로, 자막 y 1450)
+- stats 항목 `count`(카운트업 프레임 수, 짧은 비트에서 숫자가 끝까지 보이게)
+- `scripts/capture_posts.cjs`: X 공개 embed 캡처, 아바타·아이디 흐림, `--text-only` 본문만 자르기
+- 문서: shorts-motion.md § 9 (런칭·뉴스 쇼츠), episode-format.md 아이보리 모션 비트·장면 스위치,
+  SKILL.md 새 쇼츠 기본값(하드컷, 즉시 음성, 포스트잇 대신 모션그래픽), tts.py 키 경로(VIDEO_TOOLS) 안내
+
 ## 1.2.0 — 2026-11-15 · 순위 쇼츠 레이아웃 (EP.05–07)
 
 - 새 beat 종류 `win`(EP.05 TOP9 카운트다운: 16:9 창 + 공식 영상, 9→1 사다리, 카운트업 카드),

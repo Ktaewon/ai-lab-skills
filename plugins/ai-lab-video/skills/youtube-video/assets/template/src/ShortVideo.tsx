@@ -19,7 +19,10 @@ const Progress: React.FC<{ total: number }> = ({ total }) => {
   return <div style={{ position: 'absolute', left: 0, top: 0, height: 12, width: `${(frame / Math.max(1, total)) * 100}%`, background: theme.accent }} />;
 };
 
-export const shortFrames = (shortId: string) => scenesOf(shortId).reduce((n, s) => n + s.frames, 0);
+// "noLeadIn": true on a scene (user, 2026-11-18 "영상 시작하자마자 음성"): the short plays that scene from its
+// narration start, skipping prepare.py's lead-in (all timings inside stay in sync).
+const skipOf = (s: { props?: unknown }) => ((s.props as { noLeadIn?: boolean } | undefined)?.noLeadIn ? LEAD_IN : 0);
+export const shortFrames = (shortId: string) => scenesOf(shortId).reduce((n, s) => n + s.frames - skipOf(s), 0);
 
 // Real text width in px (fonts are loaded before any frame renders, see fonts.ts).
 let ctx: CanvasRenderingContext2D | null = null;
@@ -127,21 +130,28 @@ const Hook: React.FC<{ text: string }> = ({ text }) => {
 
 // "fixed" hook (episode.json "hookStyle": "fixed"): a big, plain title that stays at the top for
 // the whole short, like most Korean countdown shorts. Lines split on "\n"; the last line is yellow.
-const FixedHeader: React.FC<{ text: string }> = ({ text }) => {
+// With "fixedBand": true on the short (EP.08, 2026-11-18) the title sits on a dark band (0–490 px) and every
+// scene is pushed down FIXED_SHIFT px, so full-frame beats (photo, ivory motion beats) start under it.
+const FIXED_BAND = 490;
+const FIXED_SHIFT = 200;
+const FixedHeader: React.FC<{ text: string; band?: boolean }> = ({ text, band }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const lines = text.split('\n');
   return (
-    <div style={{ position: 'absolute', left: 30, right: 30, top: 190, textAlign: 'center' }}>
+    <>
+    {band && <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: FIXED_BAND, background: '#141416' }} />}
+    <div style={{ position: 'absolute', left: 30, right: 30, top: band ? 175 : 190, textAlign: 'center' }}>
       {lines.map((l, i) => {
         const p = spring({ frame: frame - i * 4, fps, config: { damping: 12, mass: 0.7 } });
         const size = Math.min(122, (1000 / Math.max(1, textW(l, 1))));
         return (
           <div key={i} style={{ fontFamily: theme.display, fontSize: size, lineHeight: 1.13, color: i === lines.length - 1 ? '#FFE45C' : '#fff', whiteSpace: 'nowrap',
-            WebkitTextStroke: '8px #000', paintOrder: 'stroke fill', transform: `scale(${0.7 + 0.3 * p})`, opacity: Math.min(1, p * 1.5) }}>{l}</div>
+            WebkitTextStroke: '8px #000', paintOrder: 'stroke fill', transform: `scale(${0.88 + 0.12 * p})`, opacity: Math.min(1, 0.75 + p) }}>{l}</div>
         );
       })}
     </div>
+    </>
   );
 };
 
@@ -149,25 +159,33 @@ const FixedHeader: React.FC<{ text: string }> = ({ text }) => {
 export const ShortVideo: React.FC<{ shortId: string; clean?: boolean }> = ({ shortId, clean }) => {
   const short = timeline.shorts.find((s) => s.id === shortId);
   const scenes = scenesOf(shortId);
+  // hookStyle / captionStyle: per short (episode.json shorts[]) first, then the episode-wide value.
+  const sh = (short ?? {}) as { hookStyle?: string; captionStyle?: string; fixedBand?: boolean };
+  const hookStyle = sh.hookStyle ?? (timeline as { hookStyle?: string }).hookStyle;
+  const captionStyle = sh.captionStyle ?? (timeline as { captionStyle?: string }).captionStyle;
+  const band = hookStyle === 'fixed' && !!sh.fixedBand;
   let from = 0;
   return (
     <AbsoluteFill style={{ background: theme.ink, wordBreak: 'keep-all' }}>
       {scenes.map((s) => {
         const at = from;
-        from += s.frames;
+        const skip = skipOf(s);
+        from += s.frames - skip;
         return (
-          <Sequence key={s.id} from={at} durationInFrames={s.frames}>
-            <SceneView scene={s} />
-            {!clean && <Captions captions={s.captions.short} format="short" plain={(timeline as { captionStyle?: string }).captionStyle === 'plain'} />}
-            {s.audio && (
-              <Sequence from={LEAD_IN}>
-                <Audio src={staticFile(s.audio)} />
-              </Sequence>
-            )}
+          <Sequence key={s.id} from={at} durationInFrames={s.frames - skip}>
+            <Sequence from={-skip}>
+              {band ? <AbsoluteFill style={{ transform: `translateY(${FIXED_SHIFT}px)` }}><SceneView scene={s} /></AbsoluteFill> : <SceneView scene={s} />}
+              {!clean && <Captions captions={s.captions.short} format="short" plain={captionStyle === 'plain'} box={captionStyle === 'box'} top={band ? 1450 : undefined} />}
+              {s.audio && (
+                <Sequence from={LEAD_IN}>
+                  <Audio src={staticFile(s.audio)} />
+                </Sequence>
+              )}
+            </Sequence>
           </Sequence>
         );
       })}
-      {short?.hook && ((timeline as { hookStyle?: string }).hookStyle === 'fixed' ? <FixedHeader text={short.hook} /> : <Hook text={short.hook} />)}
+      {short?.hook && (hookStyle === 'fixed' ? <FixedHeader text={short.hook} band={band} /> : <Hook text={short.hook} />)}
       {!clean && <Progress total={from} />}
       {timeline.music && <Audio src={staticFile(timeline.music)} volume={timeline.musicVolume} loop />}
     </AbsoluteFill>

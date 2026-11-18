@@ -39,7 +39,7 @@ const Marked: React.FC<{ text: string; highlights: Highlight[]; frame: number }>
   return <>{parts}</>;
 };
 
-export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short'; highlights?: Highlight[]; plain?: boolean }> = ({ captions, format, highlights = [], plain }) => {
+export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short'; highlights?: Highlight[]; plain?: boolean; box?: boolean; top?: number }> = ({ captions, format, highlights = [], plain, box, top }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cap = captions.find((c) => frame >= c.from && frame < c.to);
@@ -61,11 +61,21 @@ export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short';
     );
   }
 
+  if (box) {
+    // "box" Shorts captions (captionStyle "box", EP.08): one calm line in a dark rounded box — readable on
+    // ivory motion beats and on footage alike.
+    return (
+      <div style={{ position: 'absolute', left: 70, right: 70, top: top ?? 1320, display: 'flex', justifyContent: 'center' }}>
+        <span style={{ fontFamily: theme.font, fontSize: 58, fontWeight: 700, lineHeight: 1.4, color: '#fff', textAlign: 'center',
+          background: 'rgba(20,20,22,0.82)', padding: '12px 30px', borderRadius: 18, wordBreak: 'keep-all', whiteSpace: 'pre-line' }}>{cap.text}</span>
+      </div>
+    );
+  }
   if (plain) {
     // "plain" Shorts captions (episode.json "captionStyle": "plain"): an ordinary subtitle, white
     // Pretendard with a dark outline, no per-word colour, no pop. Up to two lines, centred.
     return (
-      <div style={{ position: 'absolute', left: 70, right: 70, top: 1330, textAlign: 'center' }}>
+      <div style={{ position: 'absolute', left: 70, right: 70, top: top ?? 1330, textAlign: 'center' }}>
         <span style={{ fontFamily: theme.font, fontWeight: 800, fontSize: 64, lineHeight: 1.32, color: '#fff', WebkitTextStroke: '10px rgba(0,0,0,0.92)', paintOrder: 'stroke fill',
           textShadow: '0 4px 14px rgba(0,0,0,0.55)', wordBreak: 'keep-all', whiteSpace: 'pre-line' }}>{cap.text}</span>
       </div>
@@ -86,7 +96,7 @@ export const Captions: React.FC<{ captions: Caption[]; format: 'long' | 'short';
   }
   const pop = spring({ frame: frame - cap.from, fps, config: { damping: 12, mass: 0.6 } });
   return (
-    <div style={{ position: 'absolute', left: 50, right: 50, top: 1300, textAlign: 'center', transform: `scale(${0.85 + 0.15 * pop})` }}>
+    <div style={{ position: 'absolute', left: 50, right: 50, top: top ?? 1300, textAlign: 'center', transform: `scale(${0.85 + 0.15 * pop})` }}>
       <span style={{ fontFamily: theme.display, fontSize: 88, lineHeight: 1.2, color: '#fff', WebkitTextStroke: '16px #000', paintOrder: 'stroke fill' }}>
         {words.map((w, i) => (
           <span key={i} style={{ color: i === current ? theme.caption : '#fff', display: 'inline-block', transform: i === current ? 'scale(1.08)' : undefined, margin: '0 18px' }}>

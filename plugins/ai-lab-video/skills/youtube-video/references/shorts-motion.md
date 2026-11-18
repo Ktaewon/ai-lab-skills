@@ -172,3 +172,36 @@ repeat "너무 식상해" and rejected emoji vote buttons as an ending ("마지�
   premium look — keep cartoon SFX for the playful pickle/otter styles only.
 - Remotion `still` in parallel fails with "No available ports" on this machine: render a
   `--scale=0.5` draft once with `--port=3417` and pull frames with ffmpeg instead.
+
+## 9. News / launch shorts — EP.08 "이걸 GPT-6.2가 만들었다고?" (2026-11-18)
+
+A model/product launch told through the internet's reaction: hottest community result first, then what it is,
+official demos, numbers, the backlash, the question. ~60 s, `hybrid` = real footage `photo` beats + ivory motion beats.
+
+**Research (do it before the script)**
+- Official page first (features, prices, benchmarks, demo videos). openai.com embeds Vimeo: read the iframe ids
+  (`player.vimeo.com/video/<id>?h=<hash>`) in the browser, click the demo tabs to load the lazy ones.
+- Reactions: open each X post (`x.com/<user>/status/<id>` works without login and shows views/likes); X/Threads
+  search and Reddit need login or are blocked — find posts through web search and tech press (VentureBeat quoted the
+  big ones). Rank results by views/likes; the hook is the most-viewed *result* (EP.08: Mollick's space elevator,
+  11.1만 views). Big negative posts are the twist (Shumer 105만, Theo 53만) — keep both sides.
+- Download with the user's terminal when the agent shell has no network: one `fetch_<topic>.sh` with
+  `uvx yt-dlp` (X videos; Vimeo with `--referer https://openai.com/`, `--download-sections "*0-45"`), and
+  `scripts/capture_posts.cjs <out> name=<id> ... --text-only` for the post cards. Look at the PNGs: blur the
+  avatar with ffmpeg if the embed markup slipped past the script.
+- Official demo clips can carry their own burned-in subtitles — step through frames (`fps=2,tile`) and start
+  where the frame is clean, or they collide with ours (the paper-lamp clip did).
+
+**Look and timing (each was a correction)**
+- Hook: `"hook": "이걸 GPT-6.2가\n만들었다고?"` + `"hookStyle": "fixed"`, `"fixedBand": true` — the big title like the
+  ranking shorts, over the most striking frame of the hook clip (the capsule shot, not the cabin interior).
+- `"hardCut": true`, `"noLeadIn": true` on the scene: no whoosh, no flash, voice from frame 0.
+- Pace: Gemini (Kore) read EP.08 at 70.9 s; the user wanted it faster. `ffmpeg -af atempo=1.2` on the TTS file
+  (keep the original in record/), re-align, re-prepare → 59.9 s. Aim ≤ 60 s.
+- Cut on every phrase: a beat over ~3 s needs a second shot (the hook clip got a "블렌더 + 유니티로" cut with the
+  author's post as a `meme`; the 6 s VS card got an "OpenAI 공식 데모" cut).
+- Fact beats are motion graphics: `stats`, `duel` (model vs model), `stall` (a long task freezing), `headline`
+  (captured post with highlighter + "조회 105만" stamp), `poll` to close. Not post-its, not a side-bar text card.
+- Cover: `npx remotion still Short-<id> out/thumbnail-short-<id>.png --frame=60 --props='{"shortId":"<id>","clean":true}'`.
+- Upload text: title with 2–3 hashtags (`#GPT62` — no "-" or "." in hashtags), description hashtags, a tag list
+  (model names with/without hyphen, Korean spellings, product names, what's shown, channel name), every source.

@@ -104,6 +104,12 @@ Agree on these before building (ask only what you can't infer; propose defaults)
   If the voice misreads a word ("TOP9" → "탑 구"), add `"pronounce": {"TOP9": "탑 나인"}`.
   Don't repeat the same countdown layout every episode: when the ranked number spans orders of
   magnitude (stars, users), use `tower` beats instead (§ 8, EP.07 star elevator, cinematic `t_*` SFX).
+  For a **launch / news short** (a new model or product and how people reacted) follow
+  `references/shorts-motion.md` § 9 (EP.08 GPT-6.2): hottest community result as the hook ("이걸 ~가 만들었다고?"),
+  the big fixed title on a band (`hookStyle: "fixed"` + `fixedBand` per short), real footage + ivory motion beats
+  (`stats`, `duel`, `stall`, `headline`, `poll`), `hardCut` + `noLeadIn` on the scene, ≤ 60 s.
+  **Defaults for every new short (user, 2026-11-18):** hard cuts with no cut whoosh/flash, voice from frame 0,
+  motion graphics instead of post-it memos and side-bar cards, every count-up landing before its cut.
 - **Thumbnail**: two short lines (≤ 7 chars each), payoff word last.
 - **Upload text**: `description` and `tags` in episode.json feed `out/youtube.md`. When asked for
   upload copy, also write each short's title/description and a pinned comment (for a blind test:
@@ -307,5 +313,7 @@ one-time OAuth setup and Google API packages; see `references/tools.md`).
   snapped to real speech chunks); re-check old files for free with `align_words.py <audio_dir> --fix-only`,
   then re-run prepare.py. On Windows, faster-whisper may fail (`av` too new for the venv's Python):
   use `--engine scribe`.
+- **tts.py says "No Gemini key"**: the keys live in `$VIDEO_TOOLS/OpenMontage/.env`; when the tools are not in
+  `~/video-tools`, prefix the command with `VIDEO_TOOLS=<folder holding OpenMontage>` (same for align_words.py).
 - **Short-only scene shows nothing / no beat changes**: it has no word timings — its narration
   needs a public/audio/<id>.txt for align_words.py (prepare.py writes it for `"tts": true` scenes).

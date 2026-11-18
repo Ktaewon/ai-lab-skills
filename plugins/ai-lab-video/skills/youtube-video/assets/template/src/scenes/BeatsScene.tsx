@@ -6,6 +6,7 @@ import type { Scene } from '../types';
 import { WinBeat } from './WinBeat';
 import { DeskBeat } from './DeskBeat';
 import { TowerBeat } from './TowerBeat';
+import { MOTION, MemeSticker, MoneyFx } from './Motion2';
 
 // Shorts-style fast cuts over one narration track. props.beats: each beat starts when its `say`
 // word is spoken (prepare.py → beat.from) and lasts until the next one. Every cut gets a punch-in
@@ -281,6 +282,9 @@ const Visual: React.FC<{ b: Beat; f: number; len: number }> = ({ b, f, len }) =>
   if (b.kind === 'win') return <WinBeat b={b} f={f} />;
   if (b.kind === 'desk') return <DeskBeat b={b} f={f} len={len} />;
   if (b.kind === 'tower') return <TowerBeat b={b} f={f} />;
+  // ivory motion beats (Motion2): headline hud chat rules donut calendar timeline typer vs meter textcard poll ticker range stats duel stall
+  const M = MOTION[b.kind as string];
+  if (M) return <M b={b} f={f} len={len} />;
   if (b.kind === 'memo') return <Memo b={b} f={f} />;
   if (b.kind === 'rank') return <RankBoard b={b} f={f} />;
   if (b.kind === 'card') return <RankCard b={b} f={f} />;
@@ -443,7 +447,9 @@ const Stamp: React.FC<{ text: string; f: number; light?: boolean }> = ({ text, f
 
 export const BeatsScene: React.FC<{ scene: Scene }> = ({ scene }) => {
   const frame = useCurrentFrame();
-  const beats = (scene.props.beats as Beat[]) ?? [];
+  // "hardCut": true on the scene (user, 2026-11-18): plain cuts — no punch-in, no white flash, no cut whoosh.
+  const hard = !!(scene.props as { hardCut?: boolean }).hardCut;
+  const beats = ((scene.props.beats as Beat[]) ?? []).map((x) => (hard ? { ...x, cut: false } : x)) as Beat[];
   let i = 0;
   beats.forEach((b, k) => { if (frame >= b.from) i = k; });
   const b = beats[i];
@@ -451,8 +457,8 @@ export const BeatsScene: React.FC<{ scene: Scene }> = ({ scene }) => {
   const f = frame - b.from;
   const len = (beats[i + 1]?.from ?? scene.frames) - b.from;
   const cont = b.kind === 'rank' && beats[i - 1]?.kind === 'rank';
-  const punch = cont ? 1 : interpolate(f, [0, 8], [1.1, 1], { extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) });
-  const flash = interpolate(f, [0, 5], [i === 0 || cont ? 0 : 0.45, 0], { extrapolateRight: 'clamp' });
+  const punch = cont || hard ? 1 : interpolate(f, [0, 8], [1.1, 1], { extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) });
+  const flash = interpolate(f, [0, 5], [i === 0 || cont || hard ? 0 : 0.45, 0], { extrapolateRight: 'clamp' });
   return (
     <AbsoluteFill style={{ fontFamily: theme.font, wordBreak: 'keep-all' }}>
       <AbsoluteFill style={{ transform: `scale(${punch})` }}>
@@ -462,6 +468,9 @@ export const BeatsScene: React.FC<{ scene: Scene }> = ({ scene }) => {
       {b.credit && (() => { const paper = ['memo', 'icons', 'approve', 'rank', 'card'].includes(b.kind); return <div style={{ position: 'absolute', right: 60, top: 1730, fontSize: 30, fontWeight: 600, color: paper ? '#4a443c' : theme.bone, opacity: paper ? 0.85 : 0.75, textShadow: paper ? undefined : '0 2px 8px rgba(0,0,0,0.8)' }}>{b.credit}</div>; })()}
       {b.stamp && b.kind !== 'win' && b.kind !== 'desk' && b.kind !== 'tower' && <Stamp text={b.stamp} f={f} light={['memo', 'rank', 'card'].includes(b.kind)} />}
       {b.sticker && <Sticker s={b.sticker} f={f} />}
+      {/* fx (money rain/burst) and meme (a captured post or reaction image popping in on a word), Motion2 */}
+      {([] as unknown[]).concat((b as { fx?: unknown }).fx ?? []).map((x, k) => <MoneyFx key={'fx' + k} fx={x} f={f} />)}
+      {([] as unknown[]).concat((b as { meme?: unknown }).meme ?? []).map((x, k) => <MemeSticker key={'mm' + k} m={x} f={f} />)}
       <AbsoluteFill style={{ background: '#fff', opacity: flash, pointerEvents: 'none' }} />
       <BeatSfx beats={beats} />
     </AbsoluteFill>

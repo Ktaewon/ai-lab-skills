@@ -4,7 +4,7 @@
 
 ---
 
-`<경로>/ai-lab-skills` 에 youtube-video 스킬 v1.2.0 이 있어. 이걸로 내 youtube-video 스킬을 업데이트해줘.
+`<경로>/ai-lab-skills` 에 youtube-video 스킬 v1.3.0 이 있어. 이걸로 내 youtube-video 스킬을 업데이트해줘.
 
 1. `<경로>/ai-lab-skills/CHANGELOG.md` 와 `README.md` 를 읽고 무엇이 바뀌는지 나한테 짧게 알려줘.
 2. 내 `~/.claude/skills/youtube-video` 가 있으면 `diff -rq` 로 지금 버전과 비교해서, 내가 이 PC에서만 따로 고친 파일이

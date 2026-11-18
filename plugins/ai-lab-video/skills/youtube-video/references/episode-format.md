@@ -228,6 +228,49 @@ Which beat for which line is in `references/shorts-motion.md`; the fields:
   icons, character pops, approve taps and connect icons get SFX automatically; add only extra ones.
 - strokes draw smooth (no wobble) and fully, with pathLength=1; keep them inside y 300–1240
 
+#### Ivory motion beats (news / launch shorts — EP.08 "GPT-6.2" style, `scenes/Motion2.tsx`)
+
+Smooth spring motion on an ivory page (Pretendard Black titles, yellow highlighter, red tags/stamps).
+Use these between real-footage `photo` beats; the user asked for them **instead of post-it `memo`s and
+side-bar text cards** (2026-11-18). Items take `say` (resolved by prepare.py) or `at` seconds into the beat.
+```jsonc
+{ "say": "사람들이", "kind": "stats", "title": "3D 블라인드 대결 (Elo)",            // big count-ups, last row in accent
+  "items": [ { "label": "2위 Claude Fable 5.2", "value": 1271, "unit": "점", "at": 0.2 },
+             { "label": "1위 GPT-6.2 Astra", "value": 1318, "unit": "점", "say": "아스트라가", "count": 14 } ] },  // count = frames (default 26)
+{ "say": "솔은", "kind": "duel", "title": "Sol vs Astra", "sub": "FrontierCode 2.0 · 둘 다 Max",  // model vs model bars
+  "groups": [ { "label": "코딩 점수", "at": 0.1, "rows": [ { "name": "Astra", "v": 1 }, { "name": "Sol", "v": 0.985, "hi": true } ],
+                "tag": "0.5점 이내", "tagAt": 1.9 },
+              { "label": "작업당 비용", "at": 2.8, "segments": 5,                          // segments: bars drawn as blocks (v = blocks)
+                "rows": [ { "name": "Astra", "v": 5 }, { "name": "Sol", "v": 1, "hi": true } ], "tag": "약 1/5", "tagAt": 3.2 } ] },
+{ "say": "긴", "kind": "stall", "title": "긴 작업을 맡기면", "label": "엔드투엔드 빌드",   // progress freezes part-way
+  "stopAt": 0.58, "stallAt": 0.85, "steps": [ { "text": "계획 세우기", "doneAt": 0.35 }, { "text": "코드 작성", "doneAt": 0.6 }, { "text": "테스트·마무리" } ],
+  "seal": "중간에 멈춤", "sealAt": 1.3 },                                                   // a step without doneAt gets the pause mark
+{ "say": "근데", "kind": "headline", "src": "g62/post_theo_c.png", "ar": 0.654, "top": 540, "title": "반응은 극과 극",
+  "marks": [ { "x": 3, "y": 53, "w": 92, "h": 9, "at": 0.9 } ], "items": [ { "stamp": "조회 105만", "say": "백만을" } ] },  // article/post crop + highlighter (x/y/w/h in %)
+{ "say": "어려운", "kind": "vs", "title": "GPT-6.2 두 모델", "vsAt": 0.9,
+  "items": [ { "title": "Astra", "sub": "어려운 프로젝트용", "at": 0.1 }, { "title": "Sol", "sub": "매일 쓰는 가성비", "say": "매일" } ] },
+{ "say": "3D엔", "kind": "poll", "title": "GPT-6.2 아스트라", "items": [ { "text": "3D엔 괴물", "at": 0.1 }, { "text": "긴 코딩엔 글쎄", "say": "글쎄" } ],
+  "cta": "여러분은 어느 쪽?", "ctaAt": 2.9 }
+```
+- Other kinds in the same file: `hud` (footage + callout lines: items {x,y,lx,ly,text,at}), `chat` (bubbles: items {who: "ai"|"me", text, at}),
+  `rules` (rows with a red result tag: {text, result, at}), `donut` (value %, label, ringAt), `calendar` (`flips` months or `dates` tiles),
+  `timeline` (items {label, sub, img}, `active`), `typer` (typed lines {text, at, cps}), `meter` (fillTo, min, max, items {text, at}),
+  `textcard` (quote card: text, sub, tone — the user disliked it as a fact card; avoid), `ticker` (split-flap letters), `range` (price band axis/band + `next`).
+- Any beat: `meme` — a captured post/reaction image pops in as a polaroid: `{ src, x, y (% of frame centre), w, ar, at, until?, rot?, label? }`;
+  `fx` — `{ type: "rain"|"burst", at, count, seed }`.
+- Short beats: start items at ~0 s and use a faster `count` so the number has landed before the cut (user, 2026-11-18:
+  "모션그래픽이 올라가다가 수치가 안 나오고 넘어감"). Check: item `at` + count/30 s < beat length.
+- Numbers on screen are real. Where only a relation is known ("0.5점 이내", "약 1/5"), draw the relation, not invented scores.
+
+#### Scene / short switches (2026-11-18)
+- shortScene `"hardCut": true`: plain cuts — no punch-in, no white flash, no fade, no whoosh on the cut (item pops stay).
+  The user found the cut whoosh "저렴" and the flash "깜빡임" — use it on new shorts.
+- shortScene `"noLeadIn": true`: the short plays the scene from its narration start (no 0.8 s silence). Use it on the first
+  scene of a short; also trim the TTS file's leading silence (`ffmpeg -ss 0.2`) and re-run align_words.py.
+- short `"hookStyle": "fixed"` (per short, overrides the episode value) and `"fixedBand": true`: the big fixed title on a dark band
+  (0–490 px), the scene pushed down 200 px, captions at y 1450. Use it with photo / ivory motion beats; `win` beats keep
+  the episode-wide `hookStyle: "fixed"` without a band. `"captionStyle"` can also be set per short; `"box"` = white text in a dark rounded box (EP.08, best on ivory beats).
+
 #### Countdown beats (`win` — ranking shorts, EP.05 "가장 똑똑한 AI 순위 TOP9")
 
 One rank at a time in a fixed layout: the `fixed` hook title on top, a full-width 16:9 window

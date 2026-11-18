@@ -208,6 +208,10 @@ export const beatHits = (b: B, fps: number): { f: number; name: string; vol: num
   if (b.kind === 'approve') { hits.push({ at: b.pressAt ?? 1.1, name: 'send', vol: 0.5 }); hits.push({ at: (b.pressAt ?? 1.1) + 0.1, name: 'ding', vol: 0.4 }); }
   if (b.kind === 'connect') (b.icons ?? []).forEach((_: string, i: number) => hits.push({ at: i * (b.every ?? 0.32), name: 'pop', vol: 0.3 }));
   if (b.stamp) hits.push({ at: 10 / fps, name: 'stamp', vol: 0.45 });
+  const arr = (x: unknown) => (Array.isArray(x) ? x : x ? [x] : []);
+  arr(b.meme).forEach((m: B) => hits.push({ at: m.at ?? 0, name: m.sfx ?? 'pop', vol: 0.4 }));
+  arr(b.fx).forEach((x: B) => hits.push({ at: x.at ?? 0, name: x.sfx ?? 'ding', vol: 0.35 }));
+  arr(b.items).forEach((it: B) => it.stamp && hits.push({ at: it.at ?? 0, name: 'stamp', vol: 0.45 }));
   return hits.map((h) => ({ f: b.from + Math.round(h.at * fps), name: h.name, vol: h.vol ?? 0.35 }));
 };
 
