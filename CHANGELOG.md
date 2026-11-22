@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0 — 2026-11-22 · 코드 애니메이션 스킬 (code-animation)
+
+- 새 스킬 `code-animation`: 이미지·영상·오디오 생성 모델 없이 Canvas 코드와 numpy 합성만으로 손그림풍 2D 애니메이션 + 음악·효과음 제작
+  - `assets/engine.js`: 필압 잉크선, 셀 채색(`E.part`), 과슈 하늘·3톤 구름·능선·물결 나뭇잎(`E.foliage`), 안개, 빛내림, 셀 불꽃, 그레이드·그레인, 키프레임/투스 타이밍, 캡처 하네스
+  - 내용에 맞춰 고르는 스타일 프리셋 10종(`references/styles.md`): 애니 셀, 수묵, 페이퍼컷, 동화 수채, 플랫 모션, 채널 lab-stage, 그림자극, 픽셀, 칠판, 네온
+  - `references/craft.md`(퀄리티 규칙), `quality-checklist.md`(스틸 검수 루프), `sound.md`(분위기별 조성·폴리 매핑)
+  - 스크립트: `new_scene.sh` 스캐폴드, `bundle.py` 단일 HTML, `capture.cjs`(GPU 끔 — 켜면 오프스크린 캔버스가 검게 나옴), `render.sh`(프레임→사운드→먹스→2-pass loudnorm -14 LUFS), `sound_lib.py`(패드·플루트·카라플러스 현·종·북·바람·비·물·불·새·날갯짓·발소리·럼블·삐걱임·휘익·붐·라이저, `Mix`)
+  - 예제 `examples/lab01/`(이끼 낀 로봇이 깨어나 이륙하는 20초 애니 셀)
+
 ## 1.3.0 — 2026-11-18 · 런칭·뉴스 쇼츠 (EP.08 GPT-6.2)
 
 - 아이보리 모션 비트 `scenes/Motion2.tsx` 템플릿 편입: `stats` `vs` `poll` `headline` `hud` `chat` `rules` `donut`
