@@ -1,0 +1,20 @@
+{
+  "name": "ai-lab-skills",
+  "interface": {
+    "displayName": "AI 실험실 Skills"
+  },
+  "plugins": [
+    {
+      "name": "ai-lab-video",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ai-lab-video"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

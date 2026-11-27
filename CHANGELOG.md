@@ -1,5 +1,10 @@
 # Changelog
 
+## Codex 지원 — 2026-11-27
+
+- 같은 저장소로 Codex에도 설치 가능: `.agents/plugins/marketplace.json`(Codex 마켓플레이스), `plugins/ai-lab-video/.codex-plugin/plugin.json`(Codex 플러그인 정보). 스킬 내용은 그대로, Claude Code 설치에는 영향 없음
+- `codex plugin marketplace add Ktaewon/ai-lab-skills` → `codex plugin add ai-lab-video@ai-lab-skills`
+
 ## 1.4.0 — 2026-11-22 · 코드 애니메이션 스킬 (code-animation)
 
 - 새 스킬 `code-animation`: 이미지·영상·오디오 생성 모델 없이 Canvas 코드와 numpy 합성만으로 손그림풍 2D 애니메이션 + 음악·효과음 제작

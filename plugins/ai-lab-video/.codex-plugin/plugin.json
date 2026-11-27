@@ -1,0 +1,25 @@
+{
+  "name": "ai-lab-video",
+  "version": "1.4.0",
+  "description": "AI 실험실 YouTube 제작 스킬 (youtube-video): 롱폼, 쇼츠 모션 비트, 썸네일, 내레이션, 렌더 + 코드만으로 그리는 2D 애니메이션 (code-animation)",
+  "author": {
+    "name": "AI 실험실"
+  },
+  "repository": "https://github.com/Ktaewon/ai-lab-skills",
+  "keywords": ["youtube", "video", "shorts", "remotion", "animation"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "AI 실험실 Video",
+    "shortDescription": "AI 실험실 채널 롱폼·쇼츠·썸네일·코드 애니메이션 제작",
+    "longDescription": "youtube-video 스킬은 주제나 개요로 롱폼(16:9)과 쇼츠(9:16), 썸네일, 챕터, 업로드 문구를 채널 스타일(그래파이트 무대, 빨간 마커 낙서, 수달 마스코트)로 만든다. code-animation 스킬은 이미지·영상 생성 모델 없이 Canvas 코드와 numpy 오디오만으로 손그림풍 2D 애니메이션을 만든다.",
+    "developerName": "AI 실험실",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "이 주제로 AI 실험실 쇼츠 하나 만들어줘.",
+      "이 실험을 8분짜리 롱폼 에피소드로 기획해줘.",
+      "이 이야기를 코드만으로 20초 애니메이션으로 만들어줘."
+    ],
+    "brandColor": "#FF6A3D"
+  }
+}

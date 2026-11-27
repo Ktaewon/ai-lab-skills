@@ -1,7 +1,7 @@
 # ai-lab-skills
 
-AI 실험실 채널의 Claude Code 스킬 저장소 (플러그인 마켓플레이스 형식).
-지금 들어 있는 것: `ai-lab-video` 플러그인 → `youtube-video` 스킬 (v1.3.0, 쇼츠 모션 비트·순위 쇼츠·런칭 쇼츠 레이아웃 포함. 변경 내역은 CHANGELOG.md).
+AI 실험실 채널의 Claude Code · Codex 스킬 저장소 (두 도구의 플러그인 마켓플레이스 형식).
+지금 들어 있는 것: `ai-lab-video` 플러그인 → `youtube-video`, `code-animation` 스킬 (v1.4.0. 변경 내역은 CHANGELOG.md).
 
 ## 다른 PC의 Claude에 설치하기
 
@@ -26,6 +26,17 @@ bash install-local.sh
 ### C. 다른 Claude에게 시키기
 zip(또는 이 폴더)을 그 PC에 두고 Claude에게 `UPDATE_PROMPT.md` 내용을 붙여 넣는다.
 
+### D. Codex에 설치하기
+같은 저장소가 Codex 마켓플레이스도 겸한다 (`.agents/plugins/marketplace.json`, `plugins/ai-lab-video/.codex-plugin/plugin.json`).
+```
+codex plugin marketplace add Ktaewon/ai-lab-skills
+codex plugin add ai-lab-video@ai-lab-skills
+```
+또는 Codex 안에서 `/plugins` → AI 실험실 Skills → Install. 업데이트는 `codex plugin marketplace upgrade ai-lab-skills`.
+스킬 이름은 `ai-lab-video:youtube-video`, `ai-lab-video:code-animation`. 명령이 없다고 나오면 Codex를 최신으로 올린다
+(PATH의 오래된 `codex` 0.118에는 `plugin` 명령이 없다. Codex 앱에 들어 있는 CLI는 된다).
+SKILL.md 의 `AskUserQuestion`·`SendUserFile` 같은 Claude Code 도구 이름은 Codex에서는 해당 도구가 없으면 건너뛴다.
+
 ## 설치 후 그 PC에 필요한 것 (스킬과 별개)
 - Node 18+, ffmpeg, Python (스킬의 `scripts/py` 가 찾음)
 - API 키는 저장소에 없다. 그 PC의 `.env` 에 직접 넣는다: ElevenLabs/Gemini (toolkit `.env`), `PIXABAY_API_KEY` (OpenMontage `.env` 또는 환경변수)
@@ -35,6 +46,7 @@ zip(또는 이 폴더)을 그 PC에 두고 Claude에게 `UPDATE_PROMPT.md` 내�
 ## 이 PC에서 스킬을 고친 뒤 배포하기
 ```
 bash sync-from-local.sh           # ~/.claude/skills/youtube-video → plugins/ai-lab-video/skills/
-# plugin.json, .claude-plugin/marketplace.json 의 version 올리고 CHANGELOG.md 적기
+# version 올리기: plugins/ai-lab-video/.claude-plugin/plugin.json, .codex-plugin/plugin.json, .claude-plugin/marketplace.json
+# 그리고 CHANGELOG.md 적기
 git add -A && git commit -m "youtube-video 1.x.x" && git push
 ```
